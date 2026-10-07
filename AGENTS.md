@@ -309,3 +309,33 @@ Key packages from `requirements.txt`:
 - `azure-identity` - Azure authentication (AzureCliCredential)
 - `azure-search-documents` - Azure AI Search integration
 - `mcp[cli]` - Model Context Protocol support
+
+## Local Development Environment (Base44)
+
+This repository is a course of Jupyter notebooks, not a web app. The local dev
+environment runs a JupyterLab server on port 3000 serving the repo checkout —
+that server is the "app" the preview shows.
+
+- Start / rebuild: `docker compose -f docker-compose.base44.yml up -d --build`
+- Dependencies (`requirements.txt` plus `jupyterlab`) are installed into the image
+  built from `Dockerfile.base44`; the repo is bind-mounted at `/workspace`, so
+  source edits and notebook runs appear without an image rebuild.
+- JupyterLab runs with token auth disabled (`--ServerApp.token=`) and
+  `allow_remote_access` enabled so the external preview host can reach it.
+- Healthcheck: `GET http://localhost:3000/api/status` (200 = server ready).
+- Env wiring: non-secret defaults in `.env.base44-defaults` are loaded first;
+  real credentials are delivered by the platform to `/run/base44/app.env`, which
+  is listed last so it always wins.
+- Verify a notebook's imports without executing it:
+  `docker compose -f docker-compose.base44.yml exec jupyter python -c "import agent_framework, azure.ai.projects"`
+
+Gotchas specific to this container:
+
+- The lesson notebooks authenticate with `AzureCliCredential` (`az login`), which
+  cannot complete an interactive sign-in inside the sandbox. Provide
+  `AZURE_OPENAI_API_KEY` for key-based auth, or run the cloud lessons locally.
+- The .NET (`*-dotnet-agent-framework.ipynb`) samples need the .NET 10 SDK and
+  .NET Interactive / Polyglot Notebooks (a VS Code extension) — they are not
+  runnable in this JupyterLab container.
+- Lesson 17 uses Foundry Local (on-device model runtime) and downloads models;
+  it is not part of this container's setup.

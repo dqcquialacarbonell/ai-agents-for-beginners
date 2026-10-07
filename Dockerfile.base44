@@ -1,0 +1,22 @@
+# Development image for the "AI Agents for Beginners" course.
+# Only dependencies are baked in here — the repository source is bind-mounted
+# at runtime by docker-compose.base44.yml so edits show up without a rebuild.
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# git: some pip packages resolve VCS metadata; curl: handy for in-container checks
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Course dependencies (requirements.txt) + the Jupyter server that the course
+# documentation tells learners to run ("jupyter notebook").
+COPY requirements.txt ./
+RUN python -m pip install --upgrade pip \
+    && pip install -r requirements.txt \
+    && pip install jupyterlab

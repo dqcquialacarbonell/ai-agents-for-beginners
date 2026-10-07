@@ -1,0 +1,43 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/api/status",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d --build",
+  "notes": "Educational Jupyter course (Microsoft 'AI Agents for Beginners'). JupyterLab serves the repo on port 3000 with token auth disabled. Dependencies are installed into the image (Dockerfile.base44); the repo is bind-mounted at /workspace. Notebooks call Microsoft Foundry / Azure OpenAI and only execute with the user's own credentials plus an Azure sign-in (AzureCliCredential -> `az login`), which is not available inside the sandbox container.",
+  "secrets": [
+    {
+      "name": "AZURE_AI_PROJECT_ENDPOINT",
+      "description": "Microsoft Foundry project endpoint (https://<resource>.services.ai.azure.com/api/projects/<project>). Required to run most lesson notebooks.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "AZURE_OPENAI_ENDPOINT",
+      "description": "Azure OpenAI resource endpoint (https://<resource>.openai.azure.com) used by notebooks that call the model directly. Found in the Azure portal, Azure OpenAI resource -> Keys and Endpoint.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "AZURE_OPENAI_API_KEY",
+      "description": "Azure OpenAI API key (Azure portal -> Azure OpenAI resource -> Keys and Endpoint -> KEY1). Alternative to Entra ID sign-in, which is unavailable in the sandbox.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "AZURE_SEARCH_SERVICE_ENDPOINT",
+      "description": "Azure AI Search service endpoint, needed for Lesson 05 (Agentic RAG). Azure portal -> AI Search service -> Url.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "AZURE_SEARCH_API_KEY",
+      "description": "Azure AI Search admin/query key, needed for Lesson 05 (Agentic RAG). Azure portal -> AI Search service -> Keys.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "BING_CONNECTION_ID",
+      "description": "Azure AI Bing grounding connection id, needed for Lesson 08 (multi-agent Bing grounding workflow).",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "MINIMAX_API_KEY",
+      "description": "MiniMax API key (https://platform.minimaxi.com/) — optional OpenAI-compatible alternative provider used by some samples.",
+      "requiredAtBoot": false
+    }
+  ]
+}
